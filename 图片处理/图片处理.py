@@ -94,6 +94,9 @@ def create_gui():
     select_btn = tk.Button(root, text="选择图片文件", command=lambda: open_image(root))
     select_btn.pack(pady=5)
 
+    label = tk.Label(root, text="A HOI4 Modding Tool, By MangoGong from The Cross of Vienna")
+    label.pack(pady=10)
+
     #root.iconbitmap("LOGO.ico")
     root.mainloop()
 
