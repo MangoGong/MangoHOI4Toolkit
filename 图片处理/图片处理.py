@@ -95,6 +95,8 @@ def create_gui():
     select_btn.pack(pady=5)
 
     label = tk.Label(root, text="A HOI4 Modding Tool, By MangoGong from The Cross of Vienna")
+    label.pack(pady=0)
+    label = tk.Label(root, text="For more content, go to https://github.com/MangoGong")
     label.pack(pady=10)
 
     #root.iconbitmap("LOGO.ico")
