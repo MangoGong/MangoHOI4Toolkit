@@ -7,6 +7,6 @@
 
 ---
 ## 软件截图
-![](https://pic.imgdb.cn/item/6702a3d5d29ded1a8c632a74.png)
-![](https://pic.imgdb.cn/item/6702a3d5d29ded1a8c632aac.png)
-![](https://pic.imgdb.cn/item/6702a3d5d29ded1a8c632ac5.png)
+![图片处理](https://github.com/user-attachments/assets/46151608-54bc-4b45-a207-4205666467db)
+![人物生成器](https://github.com/user-attachments/assets/3b1c1d60-063e-41d5-a735-a9f68e03c0bc)
+![将领生成器](https://github.com/user-attachments/assets/cc997dfb-2a43-414b-97d6-24bb89dbb8d7)
