@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import Button, ttk
 from tkcalendar import DateEntry  # 导入tkcalendar库
 
 # 创建主窗口
@@ -144,11 +144,13 @@ tk.Label(advisor_frame, text="Cost (0+):").grid(row=1, column=0, sticky=tk.W)
 cost_frame = tk.Frame(advisor_frame)
 cost_frame.grid(row=1, column=1, sticky=tk.W)
 
-cost_spinbox = tk.Spinbox(cost_frame, from_=0, to=100, width=23)
+cost_spinbox = tk.Spinbox(cost_frame, from_=0, to=100, increment=5, width=23)
 cost_spinbox.pack(side=tk.RIGHT)  # Spinbox on the right
 cost_spinbox.bind("<KeyRelease>", lambda event: update_preview())
 
 data["advisor"]["cost"] = cost_spinbox
+
+
 
 # 其余输入框
 tk.Label(advisor_frame, text="Allowed:").grid(row=2, column=0, sticky=tk.W)
@@ -171,7 +173,7 @@ ai_will_do_entry.bind("<KeyRelease>", lambda event: update_preview())
 
 # 添加 country_leader 标签页
 create_leader_tab("country_leader", [("意识形态:", "ideology"), ("描述:", "desc"),
-                                     ("Traits:", "traits"), ("到期日期:", "expire"),
+                                     ("Traits:", "traits"), 
                                      ("ID:", "id")])
 
 country_leader_frame = notebook.children['!frame5']

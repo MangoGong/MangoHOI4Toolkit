@@ -2,11 +2,11 @@
 
 
 a = Analysis(
-    ['D:\\TCV\\MangoHOI4Toolkit\\人物生成器（未完成）\\人物生成器.py'],
+    ['人物生成器.py'],
     pathex=[],
     binaries=[],
     datas=[],
-    hiddenimports=[],
+    hiddenimports=['babel.numbers'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
