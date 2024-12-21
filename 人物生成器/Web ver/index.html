@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOI4 修改工具</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .tabs {
+            flex: 2;
+        }
+
+        .output {
+            flex: 1;
+        }
+
+        textarea {
+            width: 100%;
+            height: 400px;
+        }
+
+        .tab {
+            display: none;
+        }
+
+        .tab.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>HOI4 修改工具，由 MangoGong 制作</h1>
+        <p>更多内容请访问 <a href="https://github.com/MangoGong" target="_blank">https://github.com/MangoGong</a></p>
+    </header>
+
+    <div class="container">
+        <div class="tabs">
+            <nav>
+                <label><input type="checkbox" id="fieldMarshalCheckbox" onchange="toggleTab('fieldMarshal')">field_marshal</label>
+                <label><input type="checkbox" id="navyLeaderCheckbox" onchange="toggleTab('navyLeader')">navy_leader</label>
+                <label><input type="checkbox" id="corpsCommanderCheckbox" onchange="toggleTab('corpsCommander')">corps_commander</label>
+                <label><input type="checkbox" id="advisorCheckbox" onchange="toggleTab('advisor')">advisor</label>
+                <label><input type="checkbox" id="countryLeaderCheckbox" onchange="toggleTab('countryLeader')">country_leader</label>
+            </nav>
+
+            <div id="fieldMarshal" class="tab">
+                <h2>陆军元帅</h2>
+                <label>技能 (1-10):</label>
+                <input type="number" id="fieldMarshalSkill" min="1" max="10" onchange="updatePreview()">
+                <label>攻击技能 (1-10):</label>
+                <input type="number" id="fieldMarshalAttack" min="1" max="10" onchange="updatePreview()">
+                <label>防御技能 (1-10):</label>
+                <input type="number" id="fieldMarshalDefense" min="1" max="10" onchange="updatePreview()">
+                <label>计划技能 (1-10):</label>
+                <input type="number" id="fieldMarshalPlanning" min="1" max="10" onchange="updatePreview()">
+                <label>后勤技能 (1-10):</label>
+                <input type="number" id="fieldMarshalLogistics" min="1" max="10" onchange="updatePreview()">
+            </div>
+
+            <div id="navyLeader" class="tab">
+                <h2>海军指挥官</h2>
+                <label>技能 (1-10):</label>
+                <input type="number" id="navyLeaderSkill" min="1" max="10" onchange="updatePreview()">
+                <label>攻击技能 (1-10):</label>
+                <input type="number" id="navyLeaderAttack" min="1" max="10" onchange="updatePreview()">
+                <label>防御技能 (1-10):</label>
+                <input type="number" id="navyLeaderDefense" min="1" max="10" onchange="updatePreview()">
+                <label>机动技能 (1-10):</label>
+                <input type="number" id="navyLeaderManeuvering" min="1" max="10" onchange="updatePreview()">
+                <label>协作技能 (1-10):</label>
+                <input type="number" id="navyLeaderCoordination" min="1" max="10" onchange="updatePreview()">
+            </div>
+
+            <div id="corpsCommander" class="tab">
+                <h2>军团指挥官</h2>
+                <label>技能 (1-10):</label>
+                <input type="number" id="corpsCommanderSkill" min="1" max="10" onchange="updatePreview()">
+                <label>攻击技能 (1-10):</label>
+                <input type="number" id="corpsCommanderAttack" min="1" max="10" onchange="updatePreview()">
+                <label>防御技能 (1-10):</label>
+                <input type="number" id="corpsCommanderDefense" min="1" max="10" onchange="updatePreview()">
+                <label>计划技能 (1-10):</label>
+                <input type="number" id="corpsCommanderPlanning" min="1" max="10" onchange="updatePreview()">
+                <label>后勤技能 (1-10):</label>
+                <input type="number" id="corpsCommanderLogistics" min="1" max="10" onchange="updatePreview()">
+            </div>
+
+            <div id="advisor" class="tab">
+                <h2>顾问</h2>
+                <label>花费(pp):</label>
+                <input type="number" id="advisorCost" min="0" onchange="updatePreview()">
+                <label>特质:</label>
+                <input type="text" id="advisorTraits" onchange="updatePreview()">
+                <label>Allowed:</label>
+                <input type="text" id="advisorAllowed" onchange="updatePreview()">
+                <label>AI will do:</label>
+                <input type="number" id="advisorAIWillDo" min="0" max="1" step="0.1" onchange="updatePreview()">
+            </div>
+
+            <div id="countryLeader" class="tab">
+                <h2>国家领导人</h2>
+                <label>到期日期:</label>
+                <input type="number" id="expireDateY" max="9999" placeholder="年" onchange="updatePreview()">年
+                <input type="number" id="expireDateM" min="1" max="12" placeholder="月" onchange="updatePreview()">月
+                <input type="number" id="expireDateD" min="1" max="31" placeholder="日" onchange="updatePreview()">日
+                <label>意识形态:</label>
+                <input type="text" id="countryLeaderIdeology" onchange="updatePreview()">
+                <label>描述:</label>
+                <input type="text" id="countryLeaderDesc" onchange="updatePreview()">
+                <label>ID:</label>
+                <input type="number" id="countryLeaderIdentification" onchange="updatePreview()">
+            </div>
+        </div>
+
+        <div class="output">
+            <h2>代码预览</h2>
+            <textarea id="preview" readonly></textarea>
+        </div>
+    </div>
+
+    <script>
+        function toggleTab(tabId) {
+            const tab = document.getElementById(tabId);
+            const checkbox = document.getElementById(`${tabId}Checkbox`);
+            tab.style.display = checkbox.checked ? 'block' : 'none';
+            if (tabId === 'fieldMarshal' && checkbox.checked) {
+                document.getElementById('corpsCommanderCheckbox').checked = false;
+                document.getElementById('corpsCommander').style.display = 'none';
+            } else if (tabId === 'corpsCommander' && checkbox.checked) {
+                document.getElementById('fieldMarshalCheckbox').checked = false;
+                document.getElementById('fieldMarshal').style.display = 'none';
+            }
+            updatePreview();
+        }
+
+        function updatePreview() {
+            const preview = document.getElementById('preview');
+
+            let code = `characters = {\n`;
+
+            if (document.getElementById('fieldMarshalCheckbox').checked) {
+                const fieldMarshalSkill = document.getElementById('fieldMarshalSkill').value;
+                const fieldMarshalAttack = document.getElementById('fieldMarshalAttack').value;
+                const fieldMarshalDefense = document.getElementById('fieldMarshalDefense').value;
+                const fieldMarshalPlanning = document.getElementById('fieldMarshalPlanning').value;
+                const fieldMarshalLogistics = document.getElementById('fieldMarshalLogistics').value;
+
+                if (fieldMarshalSkill) {
+                    code += `\tfield_marshal = {\n`;
+                    code += `\t\tskill = ${fieldMarshalSkill}\n`;
+                    code += `\t\tattack_skill = ${fieldMarshalAttack}\n`;
+                    code += `\t\tdefense_skill = ${fieldMarshalDefense}\n`;
+                    code += `\t\tplanning_skill = ${fieldMarshalPlanning}\n`;
+                    code += `\t\tlogistics_skill = ${fieldMarshalLogistics}\n`;
+                    code += `\t}\n`;
+                }
+            }
+
+            if (document.getElementById('navyLeaderCheckbox').checked) {
+                const navyLeaderSkill = document.getElementById('navyLeaderSkill').value;
+                const navyLeaderAttack = document.getElementById('navyLeaderAttack').value;
+                const navyLeaderDefense = document.getElementById('navyLeaderDefense').value;
+                const navyLeaderManeuvering = document.getElementById('navyLeaderManeuvering').value;
+                const navyLeaderCoordination = document.getElementById('navyLeaderCoordination').value;
+                if (navyLeaderSkill) {
+                    code += `\tnavy_leader = {\n`;
+                    code += `\t\tskill = ${navyLeaderSkill}\n`;
+                    code += `\t\tattack_skill = ${navyLeaderAttack}\n`;
+                    code += `\t\tdefense_skill = ${navyLeaderDefense}\n`;
+                    code += `\t\tmaneuvering_skill = ${navyLeaderManeuvering}\n`;
+                    code += `\t\tcoordination_skill = ${navyLeaderCoordination}\n`;
+                    code += `\t}\n`;
+                }
+            }
+
+            if (document.getElementById('corpsCommanderCheckbox').checked) {
+                const corpsCommanderSkill = document.getElementById('corpsCommanderSkill').value;
+                const corpsCommanderAttack = document.getElementById('corpsCommanderAttack').value;
+                const corpsCommanderDefense = document.getElementById('corpsCommanderDefense').value;
+                const corpsCommanderPlanning = document.getElementById('corpsCommanderPlanning').value;
+                const corpsCommanderLogistics = document.getElementById('corpsCommanderLogistics').value;
+                if (corpsCommanderSkill) {
+                    code += `\tcorps_commander = {\n`;
+                    code += `\t\tskill = ${corpsCommanderSkill}\n`;
+                    code += `\t\tattack_skill = ${corpsCommanderAttack}\n`;
+                    code += `\t\tdefense_skill = ${corpsCommanderDefense}\n`;
+                    code += `\t\tplanning_skill = ${corpsCommanderPlanning}\n`;
+                    code += `\t\tlogistics_skill = ${corpsCommanderLogistics}\n`;
+                    code += `\t}\n`;
+                }
+            }
+
+            if (document.getElementById('advisorCheckbox').checked) {
+                const advisorCost = document.getElementById('advisorCost').value;
+                const advisorTraits = document.getElementById('advisorTraits').value;
+                const advisorAllowed = document.getElementById('advisorAllowed').value;
+                const advisorAIWillDo = document.getElementById('advisorAIWillDo').value;
+                if (advisorCost) {
+                    code += `\tadvisor = {\n`;
+                    code += `\t\tcost = ${advisorCost}\n`;
+                    code += `\t\ttraits = ${advisorTraits}\n`;
+                    code += `\t\tallowed = ${advisorAllowed}\n`;
+                    code += `\t\tai_will_do = ${advisorAIWillDo}\n`;
+                    code += `\t}\n`;
+                }
+            }
+
+            if (document.getElementById('countryLeaderCheckbox').checked) {
+                const expireDateY = document.getElementById('expireDateY').value;
+                const expireDateM = document.getElementById('expireDateM').value;
+                const expireDateD = document.getElementById('expireDateD').value;
+                const countryLeaderExpireDate = `${expireDateY}.${expireDateM}.${expireDateD}`;
+                const countryLeaderIdeology = document.getElementById('countryLeaderIdeology').value;
+                const countryLeaderDesc = document.getElementById('countryLeaderDesc').value;
+                const countryLeaderIdentification = document.getElementById('countryLeaderIdentification').value;
+                if (countryLeaderIdeology) {
+                    code += `\tcountry_leader = {\n`;
+                    code += `\t	expire = "${countryLeaderExpireDate}"\n`;
+                    code += `\t	ideology = ${countryLeaderIdeology}\n`;
+                    code += `\t	desc = ${countryLeaderDesc}\n`;
+                    code += `\t	identification = ${countryLeaderIdentification}\n`;
+                    code += `\t}\n`;
+                }
+            }
+
+            code += `}`;
+
+            preview.value = code;
+        }
+
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('change', updatePreview);
+        });
+
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            toggleTab(checkbox.id.replace('Checkbox', ''));
+        });
+    </script>
+</body>
+</html>
