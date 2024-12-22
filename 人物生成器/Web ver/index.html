@@ -131,10 +131,220 @@
         <div class="output">
             <h2>代码预览</h2>
             <textarea id="preview" readonly></textarea>
+            <button id="exportTxt" onclick="exportToTxt()">导出为TXT</button>
+            <input type="file" id="importTxt" accept=".txt" onchange="importFromTxt()">
         </div>
     </div>
 
     <script>
+        function exportToTxt() {
+        const code = document.getElementById('preview').value;
+        const blob = new Blob([code], { type: 'text/plain' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'output.txt';
+        link.click();
+        URL.revokeObjectURL(link.href);
+        }
+
+        function importFromTxt() {
+            const fileInput = document.getElementById('importTxt');
+            const file = fileInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const content = e.target.result;
+                    parseAndFill(content);
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        function parseAndFill(content) {
+                // 清除之前的数据
+            document.getElementById('name').value = '';
+            document.getElementById('fieldMarshalSkill').value = '';
+            document.getElementById('fieldMarshalAttack').value = '';
+            document.getElementById('fieldMarshalDefense').value = '';
+            document.getElementById('fieldMarshalPlanning').value = '';
+            document.getElementById('fieldMarshalLogistics').value = '';
+
+            document.getElementById('navyLeaderSkill').value = '';
+            document.getElementById('navyLeaderAttack').value = '';
+            document.getElementById('navyLeaderDefense').value = '';
+            document.getElementById('navyLeaderManeuvering').value = '';
+            document.getElementById('navyLeaderCoordination').value = '';
+
+            document.getElementById('corpsCommanderSkill').value = '';
+            document.getElementById('corpsCommanderAttack').value = '';
+            document.getElementById('corpsCommanderDefense').value = '';
+            document.getElementById('corpsCommanderPlanning').value = '';
+            document.getElementById('corpsCommanderLogistics').value = '';
+
+            document.getElementById('advisorCost').value = '';
+            document.getElementById('advisorTraits').value = '';
+            document.getElementById('advisorAllowed').value = '';
+            document.getElementById('advisorAIWillDo').value = '';
+
+            document.getElementById('expireDateY').value = '';
+            document.getElementById('expireDateM').value = '';
+            document.getElementById('expireDateD').value = '';
+            document.getElementById('countryLeaderIdeology').value = '';
+            document.getElementById('countryLeaderDesc').value = '';
+            document.getElementById('countryLeaderIdentification').value = '';
+
+            // 取消所有勾选框
+            document.getElementById('fieldMarshalCheckbox').checked = false;
+            document.getElementById('navyLeaderCheckbox').checked = false;
+            document.getElementById('corpsCommanderCheckbox').checked = false;
+            document.getElementById('advisorCheckbox').checked = false;
+            document.getElementById('countryLeaderCheckbox').checked = false;
+        // 自动勾选和取消勾选的功能部分
+        function autoCheckboxUpdate(match, checkboxId) {
+            const checkbox = document.getElementById(checkboxId);
+            if (match && !checkbox.checked) {
+                checkbox.checked = true;  // 如果找到值并且勾选框未选中，则勾选
+            } else if (!match && checkbox.checked) {
+                checkbox.checked = false;  // 如果没有找到值并且勾选框已选中，则取消勾选
+            }
+        }
+
+        const lines = content.split('\n');
+        
+        // 处理名称
+        const nameMatch = content.match(/\tname = \"(.*?)\"/);
+        if (nameMatch) {
+            document.getElementById('name').value = nameMatch[1];
+        }
+
+        // 处理陆军元帅部分
+        const fieldMarshalSkillMatch = content.match(/\tfield_marshal\s*=\s*{[\s\S]*?skill\s*=\s*(\d+)/);
+        const fieldMarshalAttackMatch = content.match(/\tfield_marshal\s*=\s*{[\s\S]*?attack_skill\s*=\s*(\d+)/);
+        const fieldMarshalDefenseMatch = content.match(/\tfield_marshal\s*=\s*{[\s\S]*?defense_skill\s*=\s*(\d+)/);
+        const fieldMarshalPlanningMatch = content.match(/\tfield_marshal\s*=\s*{[\s\S]*?planning_skill\s*=\s*(\d+)/);
+        const fieldMarshalLogisticsMatch = content.match(/\tfield_marshal\s*=\s*{[\s\S]*?logistics_skill\s*=\s*(\d+)/);
+
+        if (fieldMarshalSkillMatch) {
+            document.getElementById('fieldMarshalSkill').value = fieldMarshalSkillMatch[1];
+        }
+        if (fieldMarshalAttackMatch) {
+            document.getElementById('fieldMarshalAttack').value = fieldMarshalAttackMatch[1];
+        }
+        if (fieldMarshalDefenseMatch) {
+            document.getElementById('fieldMarshalDefense').value = fieldMarshalDefenseMatch[1];
+        }
+        if (fieldMarshalPlanningMatch) {
+            document.getElementById('fieldMarshalPlanning').value = fieldMarshalPlanningMatch[1];
+        }
+        if (fieldMarshalLogisticsMatch) {
+            document.getElementById('fieldMarshalLogistics').value = fieldMarshalLogisticsMatch[1];
+        }
+
+        // 根据是否有 fieldmarshal 的值，勾选或取消勾选勾选框
+        autoCheckboxUpdate(fieldMarshalSkillMatch, 'fieldMarshalCheckbox');
+        
+        // 处理海军指挥官部分
+        const navyLeaderSkillMatch = content.match(/\tnavy_leader\s*=\s*{[\s\S]*?skill\s*=\s*(\d+)/);
+        const navyLeaderAttackMatch = content.match(/\tnavy_leader\s*=\s*{[\s\S]*?attack_skill\s*=\s*(\d+)/);
+        const navyLeaderDefenseMatch = content.match(/\tnavy_leader\s*=\s*{[\s\S]*?defense_skill\s*=\s*(\d+)/);
+        const navyLeaderManeuveringMatch = content.match(/\tnavy_leader\s*=\s*{[\s\S]*?maneuvering_skill\s*=\s*(\d+)/);
+        const navyLeaderCoordinationMatch = content.match(/\tnavy_leader\s*=\s*{[\s\S]*?coordination_skill\s*=\s*(\d+)/);
+
+        if (navyLeaderSkillMatch) {
+            document.getElementById('navyLeaderSkill').value = navyLeaderSkillMatch[1];
+        }
+        if (navyLeaderAttackMatch) {
+            document.getElementById('navyLeaderAttack').value = navyLeaderAttackMatch[1];
+        }
+        if (navyLeaderDefenseMatch) {
+            document.getElementById('navyLeaderDefense').value = navyLeaderDefenseMatch[1];
+        }
+        if (navyLeaderManeuveringMatch) {
+            document.getElementById('navyLeaderManeuvering').value = navyLeaderManeuveringMatch[1];
+        }
+        if (navyLeaderCoordinationMatch) {
+            document.getElementById('navyLeaderCoordination').value = navyLeaderCoordinationMatch[1];
+        }
+
+        // 根据是否有 navy_leader 的值，勾选或取消勾选勾选框
+        autoCheckboxUpdate(navyLeaderSkillMatch, 'navyLeaderCheckbox');
+
+        // 处理军团指挥官部分
+        const corpsCommanderSkillMatch = content.match(/\tcorps_commander\s*=\s*{[\s\S]*?skill\s*=\s*(\d+)/);
+        const corpsCommanderAttackMatch = content.match(/\tcorps_commander\s*=\s*{[\s\S]*?attack_skill\s*=\s*(\d+)/);
+        const corpsCommanderDefenseMatch = content.match(/\tcorps_commander\s*=\s*{[\s\S]*?defense_skill\s*=\s*(\d+)/);
+        const corpsCommanderPlanningMatch = content.match(/\tcorps_commander\s*=\s*{[\s\S]*?planning_skill\s*=\s*(\d+)/);
+        const corpsCommanderLogisticsMatch = content.match(/\tcorps_commander\s*=\s*{[\s\S]*?logistics_skill\s*=\s*(\d+)/);
+
+        if (corpsCommanderSkillMatch) {
+            document.getElementById('corpsCommanderSkill').value = corpsCommanderSkillMatch[1];
+        }
+        if (corpsCommanderAttackMatch) {
+            document.getElementById('corpsCommanderAttack').value = corpsCommanderAttackMatch[1];
+        }
+        if (corpsCommanderDefenseMatch) {
+            document.getElementById('corpsCommanderDefense').value = corpsCommanderDefenseMatch[1];
+        }
+        if (corpsCommanderPlanningMatch) {
+            document.getElementById('corpsCommanderPlanning').value = corpsCommanderPlanningMatch[1];
+        }
+        if (corpsCommanderLogisticsMatch) {
+            document.getElementById('corpsCommanderLogistics').value = corpsCommanderLogisticsMatch[1];
+        }
+
+        // 根据是否有 corps_commander 的值，勾选或取消勾选勾选框
+        autoCheckboxUpdate(corpsCommanderSkillMatch, 'corpsCommanderCheckbox');
+
+        // 处理顾问部分
+        const advisorCostMatch = content.match(/\tadvisor = {\n\t\tcost = (\d+)/);
+        const advisorTraitsMatch = content.match(/\t\ttraits = \"(.*?)\"/);
+        const advisorAllowedMatch = content.match(/\t\tallowed = \"(.*?)\"/);
+        const advisorAIWillDoMatch = content.match(/\t\tai_will_do = (\d+\.\d+)/);
+
+        if (advisorCostMatch) {
+            document.getElementById('advisorCost').value = advisorCostMatch[1];
+        }
+        if (advisorTraitsMatch) {
+            document.getElementById('advisorTraits').value = advisorTraitsMatch[1];
+        }
+        if (advisorAllowedMatch) {
+            document.getElementById('advisorAllowed').value = advisorAllowedMatch[1];
+        }
+        if (advisorAIWillDoMatch) {
+            document.getElementById('advisorAIWillDo').value = advisorAIWillDoMatch[1];
+        }
+
+        // 根据是否有 advisor 的值，勾选或取消勾选勾选框
+        autoCheckboxUpdate(advisorCostMatch, 'advisorCheckbox');
+
+        // 处理国家领导人部分
+        const expireDateMatch = content.match(/\texpire = \"(\d+)\.(\d+)\.(\d+)\"/);
+        const countryLeaderIdeologyMatch = content.match(/\tideology = \"(.*?)\"/);
+        const countryLeaderDescMatch = content.match(/\t\tdesc = \"(.*?)\"/);
+        const countryLeaderIdentificationMatch = content.match(/\tID = \"(.*?)\"/);
+
+        if (expireDateMatch) {
+            document.getElementById('expireDateY').value = expireDateMatch[1];
+            document.getElementById('expireDateM').value = expireDateMatch[2];
+            document.getElementById('expireDateD').value = expireDateMatch[3];
+        }
+        if (countryLeaderIdeologyMatch) {
+            document.getElementById('countryLeaderIdeology').value = countryLeaderIdeologyMatch[1];
+        }
+        if (countryLeaderDescMatch) {
+            document.getElementById('countryLeaderDesc').value = countryLeaderDescMatch[1];
+        }
+        if (countryLeaderIdentificationMatch) {
+            document.getElementById('countryLeaderIdentification').value = countryLeaderIdentificationMatch[1];
+        }
+
+        // 根据是否有 expireDate 的值，勾选或取消勾选勾选框
+        autoCheckboxUpdate(expireDateMatch, 'countryLeaderCheckbox');
+        
+        // 更新预览
+        updatePreview();
+    }
+
         function toggleTab(tabId) {
             const tab = document.getElementById(tabId);
             const checkbox = document.getElementById(`${tabId}Checkbox`);
@@ -235,7 +445,7 @@
                     code += `\t	expire = "${countryLeaderExpireDate}"\n`;
                     code += `\t	ideology = "${countryLeaderIdeology}"\n`;
                     code += `\t	desc = "${countryLeaderDesc}"\n`;
-                    code += `\t	identification = "${countryLeaderIdentification}"\n`;
+                    code += `\t	ID = "${countryLeaderIdentification}"\n`;
                     code += `\t}\n`;
                 }
             }
