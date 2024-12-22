@@ -45,8 +45,11 @@
         <h1>HOI4 修改工具，由 MangoGong 制作</h1>
         <p>更多内容请访问 <a href="https://github.com/MangoGong" target="_blank">https://github.com/MangoGong</a></p>
     </header>
-
     <div class="container">
+        <label>名称</label><input type="text" id="name" onchange="updatePreview()">
+    </div>
+    <div class="container">
+        
         <div class="tabs">
             <nav>
                 <label><input type="checkbox" id="fieldMarshalCheckbox" onchange="toggleTab('fieldMarshal')">field_marshal</label>
@@ -148,8 +151,9 @@
 
         function updatePreview() {
             const preview = document.getElementById('preview');
+            const name = document.getElementById('name').value;
 
-            let code = `characters = {\n`;
+            let code = `characters = {\n\tname = "${name}"\n`;
 
             if (document.getElementById('fieldMarshalCheckbox').checked) {
                 const fieldMarshalSkill = document.getElementById('fieldMarshalSkill').value;
@@ -229,9 +233,9 @@
                 if (countryLeaderIdeology) {
                     code += `\tcountry_leader = {\n`;
                     code += `\t	expire = "${countryLeaderExpireDate}"\n`;
-                    code += `\t	ideology = ${countryLeaderIdeology}\n`;
-                    code += `\t	desc = ${countryLeaderDesc}\n`;
-                    code += `\t	identification = ${countryLeaderIdentification}\n`;
+                    code += `\t	ideology = "${countryLeaderIdeology}"\n`;
+                    code += `\t	desc = "${countryLeaderDesc}"\n`;
+                    code += `\t	identification = "${countryLeaderIdentification}"\n`;
                     code += `\t}\n`;
                 }
             }
