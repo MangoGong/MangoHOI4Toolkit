@@ -1,0 +1,34 @@
+name: Deploy to charactergeneratorweb
+
+on:
+  push:
+    paths:
+      - '人物生成器/Web ver/index.html'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout the repository
+      uses: actions/checkout@v3
+
+    - name: Set up Git
+      run: |
+        git config user.name "GitHub Actions"
+        git config user.email "actions@github.com"
+
+    - name: Copy index.html to target repository
+      run: |
+        # 获取您自己的仓库
+        git clone https://github.com/MangoGong/charactergeneratorweb.git charactergeneratorweb
+        cp '人物生成器/Web ver/index.html' charactergeneratorweb/
+        cd charactergeneratorweb
+
+    - name: Commit and push the changes
+      run: |
+        git add index.html
+        git commit -m "Update index.html"
+        git push origin main
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
