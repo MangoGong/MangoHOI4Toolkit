@@ -20,9 +20,15 @@ jobs:
 
     - name: Copy index.html to target repository
       run: |
-        # 获取您自己的仓库
-        git clone https://github.com/MangoGong/charactergeneratorweb.git charactergeneratorweb
-        cp '人物生成器/Web ver/index.html' charactergeneratorweb/
+        # 克隆目标仓库
+        git clone https://github.com/your-username/charactergeneratorweb.git charactergeneratorweb
+        # 检查目标仓库中是否有 index.html 文件
+        if [ ! -f 'charactergeneratorweb/index.html' ]; then
+          echo "index.html not found in target repository, creating an empty one."
+          touch 'charactergeneratorweb/index.html'
+        fi
+        # 将源仓库中的 index.html 文件复制到目标仓库
+        cp '人物生成器/Web ver/index.html' 'charactergeneratorweb/index.html'
         cd charactergeneratorweb
 
     - name: Commit and push the changes
