@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOI4 修改工具</title>
+    <!-- 引入 Vue.js -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <!-- 引入 Element UI 样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入 Element UI 脚本 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <style>
+            :root {
+                --primary-color: #409EFF;
+                --secondary-color: #E6A23C;
+                --background-color: #F0F2F5;
+                --text-color: #303133;
+                --border-color: #DCDFE6;
+				--less-important-color: #909399;
+            }
+    
+            body, html {
+                margin: 0;
+                padding: 0;
+                background-color: var(--background-color);
+                color: var(--text-color);
+                font-family: 'Roboto', sans-serif;
+            }
+    
+            header {
+                background-color: var(--primary-color);
+                color: white;
+                padding: 20px;
+                text-align: center;
+            }
+    
+            header h1 {
+                margin: 0;
+                font-size: 2rem;
+            }
+    
+            header p {
+                margin: 5px 0 0;
+                font-size: 1rem;
+            }
+    
+            .container {
+                max-width: 1200px;
+                margin: 20px auto;
+                padding: 20px;
+                background-color: white;
+                border-radius: 8px;
+                box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+				
+            }
+    
+            .tabs nav {
+                display: flex;
+                justify-content: space-around;
+                margin-bottom: 20px;
+            }
+    
+            .tab {
+                display: none;
+                padding: 20px;
+            }
+    
+            .tab.active {
+                display: block;
+            }
+    
+            .output textarea {
+                width: 100%;
+                height: 300px;
+                padding: 10px;
+                border: 1px solid var(--border-color);
+                border-radius: 4px;
+                resize: none;
+            }
+    
+            .el-button--primary {
+                background-color: var(--primary-color);
+                border-color: var(--primary-color);
+                transition: background-color 0.3s, border-color 0.3s;
+            }
+    
+            .el-button--primary:hover {
+                background-color: darken(var(--primary-color), 10%);
+                border-color: darken(var(--primary-color), 10%);
+            }
+    
+            .el-checkbox__input.is-checked+.el-checkbox__label {
+                color: var(--primary-color);
+                transition: color 0.3s;
+            }
+    
+            .el-checkbox__input.is-checked .el-checkbox__inner {
+                background-color: var(--primary-color);
+                border-color: var(--primary-color);
+                transition: background-color 0.3s, border-color 0.3s;
+            }
+    
+            @media (max-width: 768px) {
+                .tabs nav {
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+    
+                .el-checkbox {
+                    margin-bottom: 10px;
+                }
+            }
+			 
+			.name-field .el-form-item__label {
+			        font-size: 0.8rem; /* 减小标签字体大小 */
+			        color: var(--less-important-color); /* 使用更浅的颜色 */
+					 
+			    }
+			 
+				.name-field .el-input__inner {
+					width: 20%; /* 减少输入框的宽度 */
+					padding: 8px; /* 减小内边距 */
+					border-color: var(--border-color);
+					background-color: #f5f7fa; /* 更淡的背景色 */
+					color: var(--less-important-color); /* 输入框内的文字颜色 */
+				}
+			
+			    .name-field {
+			        margin-bottom: 10px; /* 减少表单项之间的间距 */
+					
+			    }
+        </style>
+</head>
+<body>
+   
+        <div id="app">
+            <header>
+                <h1>角色生成器</h1>
+                <p>更多内容请访问 <a href="https://github.com/MangoGong" target="_blank">GitHub</a></p>
+            </header>
+            <div class="container">
+                <el-form label-width="120px">
+                    <el-form-item label="名称" class="name-field">
+                        <el-input v-model="name" @change="updatePreview"></el-input>
+                    </el-form-item>
+                </el-form>
+            </div>
+            <div class="container">
+                <div class="tabs">
+                    <nav>
+                        <el-checkbox-group v-model="checkedTabs" @change="handleCheckedChange">
+                            <el-checkbox label="fieldMarshal">陆军元帅</el-checkbox>
+                            <el-checkbox label="navyLeader">海军领袖</el-checkbox>
+                            <el-checkbox label="corpsCommander">陆军指挥官</el-checkbox>
+                            <el-checkbox label="advisor">顾问</el-checkbox>
+                            <el-checkbox label="countryLeader">国家领导人</el-checkbox>
+                        </el-checkbox-group>
+                    </nav>
+                    <div id="fieldMarshal" class="tab" :class="{ active: checkedTabs.includes('fieldMarshal') }">
+                        <h2>陆军元帅</h2>
+                        <el-form label-width="120px">
+                            <el-form-item label="技能 (1-10)">
+                                <i class="el-icon-soldier" style="margin-right: 10px;"></i>
+                                <el-input-number v-model.number="fieldMarshal.skill" :min="1" :max="10" @change="updatePreview"></el-input-number>
+                            </el-form-item>
+                            <el-form-item label="攻击技能 (1-10)">
+                                <i class="el-icon-soldier" style="margin-right: 10px;"></i>
+                                <el-input-number v-model.number="fieldMarshal.attack" :min="1" :max="10" @change="updatePreview"></el-input-number>
+                            </el-form-item>
+                            <el-form-item label="防御技能 (1-10)">
+                                <i class="el-icon-soldier" style="margin-right: 10px;"></i>
+                                <el-input-number v-model.number="fieldMarshal.defense" :min="1" :max="10" @change="updatePreview"></el-input-number>
+                            </el-form-item>
+                            <el-form-item label="计划技能 (1-10)">
+                                <i class="el-icon-soldier" style="margin-right: 10px;"></i>
+                                <el-input-number v-model.number="fieldMarshal.planning" :min="1" :max="10" @change="updatePreview"></el-input-number>
+                            </el-form-item>
+                            <el-form-item label="后勤技能 (1-10)">
+                                <i class="el-icon-soldier" style="margin-right: 10px;"></i>
+                                <el-input-number v-model.number="fieldMarshal.logistics" :min="1" :max="10" @change="updatePreview"></el-input-number>
+                            </el-form-item>
+                        </el-form>
+                    </div>
+                    <div id="navyLeader" class="tab" :class="{ active: checkedTabs.includes('navyLeader') }">
+                        <h2>海军领袖</h2>
+                        <el-form label-width="120px">
+                            <el-form-item label="技能 (1-10)">
+                                <i class="el-icon-ship" style="margin-right: 10px;"></i>
+                                <el-input-number v-model.number="navyLeader.skill" :min="1" :max="10" @change="updatePreview"></el-input-number>
+                            </el-form-item>
+                            <el-form-item label="海战技能 (1-10)">
+                                <i class="el-icon-ship" style="margin-right: 10px;"></i>
+                                <el-input-number v-model.number="navyLeader.seaCombat" :min="1" :max="10" @change="updatePreview"></el-input-number>
+                            </el-form-item>
+                            <el-form-item label="防御技能 (1-10)">
+                                <i class="el-icon-ship" style="margin-right: 10px;"></i>
+                                <el-input-number v-model.number="navyLeader.defense" :min="1" :max="10" @change="updatePreview"></el-input-number>
+                            </el-form-item>
+                            <el-form-item label="计划技能 (1-10)">
+                                <i class="el-icon-ship" style="margin-right: 10px;"></i>
+                                <el-input-number v-model.number="navyLeader.planning" :min="1" :max="10" @change="updatePreview"></el-input-number>
+                            </el-form-item>
+                            <el-form-item label="协作技能 (1-10)">
+                                <i class="el-icon-ship" style="margin-right: 10px;"></i>
+                                <el-input-number v-model.number="navyLeader.coordination" :min="1" :max="10" @change="updatePreview"></el-input-number>
+                            </el-form-item>
+                        </el-form>
+                    </div>
+                    <div id="corpsCommander" class="tab" :class="{ active: checkedTabs.includes('corpsCommander') }">
+                        <h2>军区指挥官</h2>
+                        <el-form label-width="120px">
+                            <el-form-item label="技能 (1-10)">
+                                <i class="el-icon-soldier" style="margin-right: 10px;"></i>
+                                <el-input-number v-model.number="corpsCommander.skill" :min="1" :max="10" @change="updatePreview"></el-input-number>
+                            </el-form-item>
+                            <el-form-item label="攻击技能 (1-10)">
+                                <i class="el-icon-soldier" style="margin-right: 10px;"></i>
+                                <el-input-number v-model.number="corpsCommander.attack" :min="1" :max="10" @change="updatePreview"></el-input-number>
+                            </el-form-item>
+                            <el-form-item label="防御技能 (1-10)">
+                                <i class="el-icon-soldier" style="margin-right: 10px;"></i>
+                                <el-input-number v-model.number="corpsCommander.defense" :min="1" :max="10" @change="updatePreview"></el-input-number>
+                            </el-form-item>
+                            <el-form-item label="计划技能 (1-10)">
+                                <i class="el-icon-soldier" style="margin-right: 10px;"></i>
+                                <el-input-number v-model.number="corpsCommander.planning" :min="1" :max="10" @change="updatePreview"></el-input-number>
+                            </el-form-item>
+                            <el-form-item label="后勤技能 (1-10)">
+                                <i class="el-icon-soldier" style="margin-right: 10px;"></i>
+                                <el-input-number v-model.number="corpsCommander.logistics" :min="1" :max="10" @change="updatePreview"></el-input-number>
+                            </el-form-item>
+                        </el-form>
+                    </div>
+                    <div id="advisor" class="tab" :class="{ active: checkedTabs.includes('advisor') }">
+                        <h2>顾问</h2>
+                        <el-form label-width="120px">
+                            <el-form-item label="花费 (1-10)">
+                                <i class="el-icon-money" style="margin-right: 10px;"></i>
+                                <el-input-number v-model.number="advisor.cost" :min="1" :max="10" @change="updatePreview"></el-input-number>
+                            </el-form-item>
+                            <el-form-item label="特质 (1-10)">
+                                <i class="el-icon-star-on" style="margin-right: 10px;"></i>
+                                <el-input v-model.number="advisor.traits" :min="1" :max="10" @change="updatePreview"></el-input-number>
+                            </el-form-item>
+                            <el-form-item label="Allowed">
+                                <i class="el-icon-check" style="margin-right: 10px;"></i>
+                                <el-input v-model.number="advisor.allowed" :min="1" :max="10" @change="updatePreview"></el-input-number>
+                            </el-form-item>
+                            <el-form-item label="AI will do:">
+                                <i class="el-icon-s-data" style="margin-right: 10px;"></i>
+                                <el-input-number v-model.number="advisor.AIwilldo" :min="1" :max="10" @change="updatePreview"></el-input-number>
+                            </el-form-item>
+                        </el-form>
+                    </div>
+                    <div id="countryLeader" class="tab" :class="{ active: checkedTabs.includes('countryLeader') }">
+                        <h2>国家领导人</h2>
+                        <el-form label-width="120px">
+                            <el-form-item label="到期日期">
+                                <el-row :gutter="20">
+                                    <el-col :span="8">
+                                        <el-form-item label="年">
+                                            <el-input-number v-model.number="countryLeader.expireDateY" :min="1" :max="9999" placeholder="年" @change="updatePreview"></el-input-number>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="月">
+                                            <el-input-number v-model.number="countryLeader.expireDateM" :min="1" :max="12" placeholder="月" @change="updatePreview"></el-input-number>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="日">
+                                            <el-input-number v-model.number="countryLeader.expireDateD" :min="1" :max="31" placeholder="日" @change="updatePreview"></el-input-number>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                            </el-form-item>
+                            <el-form-item label="意识形态">
+                                <el-input v-model="countryLeader.ideology" @change="updatePreview"></el-input>
+                            </el-form-item>
+                            <el-form-item label="描述">
+                                <el-input v-model="countryLeader.desc" @change="updatePreview"></el-input>
+                            </el-form-item>
+                            <el-form-item label="ID">
+                                <el-input-number v-model.number="countryLeader.identification" @change="updatePreview"></el-input-number>
+                            </el-form-item>
+                        </el-form>
+                    </div>
+                </div>
+                <div class="output">
+                    <textarea readonly>{{ preview }}</textarea>
+                    <el-button type="primary" @click="exportToTxt">导出为TXT</el-button>
+                </div>
+            </div>
+        </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data() {
+                return {
+                    name: '',
+                    checkedTabs: [],
+                    fieldMarshal: {
+                        skill: 5,
+                        attack: 5,
+                        defense: 5,
+                        planning: 5,
+						logistics: 5
+                    },
+                    navyLeader: {
+                        skill: 5,
+                        seaCombat: 5,
+                        defense: 5,
+                        planning: 5,
+						coordination: 5
+                    },
+                    corpsCommander: {
+                        skill: 5,
+                        attack: 5,
+                        defense: 5,
+                        planning: 5,
+						logistics: 5
+                    },
+                    advisor: { cost: 1, traits: 1, allowed: 1, AIwilldo: 1 },
+					countryLeader: { expireDateY: 2023, expireDateM: 12, expireDateD: 31, ideology: '', desc: '', identification: 1 },
+                    preview: ''
+                };
+            },
+            methods: {
+                  updatePreview() {
+					this.preview = `characters = {\n`;
+					this.preview += `    name = "${this.name}"\n`;
+					if (this.checkedTabs.includes('fieldMarshal')) {
+						this.preview += `    field_marshal = {\n`;
+						this.preview += `    \tskill = ${this.fieldMarshal.skill}\n`;
+						this.preview += `    \tattack_skill = ${this.fieldMarshal.attack}\n`;
+						this.preview += `    \tdefense_skill = ${this.fieldMarshal.defense}\n`;
+						this.preview += `    \tplanning_skill = ${this.fieldMarshal.planning}\n`;
+						this.preview += `    \tlogistics_skill = ${this.fieldMarshal.logistics}\n`;
+						this.preview += `    }\n\n`;
+					}
+					if (this.checkedTabs.includes('navyLeader')) {
+						this.preview += `    navy_leader = {\n`;
+						this.preview += `    \tskill = ${this.navyLeader.skill}\n`;
+						this.preview += `    \tsea_combat_skill = ${this.navyLeader.seaCombat}\n`;
+						this.preview += `    \tdefense_skill = ${this.navyLeader.defense}\n`;
+						this.preview += `    \tplanning_skill = ${this.navyLeader.planning}\n`;
+						this.preview += `    \tcoordination_skill = ${this.navyLeader.coordination}\n`;
+						this.preview += `}\n\n`;
+					}
+					if (this.checkedTabs.includes('corpsCommander')) {
+						this.preview += `    corps_commander = {\n`;
+						this.preview += `    \tskill = ${this.corpsCommander.skill}\n`;
+						this.preview += `    \tattack_skill = ${this.corpsCommander.attack}\n`;
+						this.preview += `    \tdefense_skill = ${this.corpsCommander.defense}\n`;
+						this.preview += `    \tplanning_skill = ${this.corpsCommander.planning}\n`;
+						this.preview += `    \tlogistics_skill = ${this.corpsCommander.logistics}\n`;
+						this.preview += `}\n\n`;
+					}
+					if (this.checkedTabs.includes('advisor')) {
+						this.preview += `    advisor = {\n`;
+						this.preview += `    \tcost = ${this.advisor.cost}\n`;
+						this.preview += `    \ttraits = ${this.advisor.traits}\n`;
+						this.preview += `    \tallowed = ${this.advisor.allowed}\n`;
+						this.preview += `    \tai_will_do = ${this.advisor.AIwilldo}\n`;
+						this.preview += `}\n\n`;
+					}
+					if (this.checkedTabs.includes('countryLeader')) {
+						this.preview += `    country_leader = {\n`;
+						this.preview += `    \texpires = {\n`;
+						this.preview += `        \tyear = ${this.countryLeader.expireDateY}\n`;
+						this.preview += `        \tmonth = ${this.countryLeader.expireDateM}\n`;
+						this.preview += `        \tday = ${this.countryLeader.expireDateD}\n`;
+						this.preview += `    \t}\n`;
+						this.preview += `    \tideology = "${this.countryLeader.ideology}"\n`;
+						this.preview += `    \tdescription = "${this.countryLeader.desc}"\n`;
+						this.preview += `    \tidentification = ${this.countryLeader.identification}\n`;
+						this.preview += `    }\n\n`;
+					}
+					this.preview += `}`;
+				},
+                // handleCheckedChange(value) {
+                //     value.forEach(tab => {
+                //         document.getElementById(tab).classList.add('active');
+                //     });
+                //     const uncheckedTabs = ['fieldMarshal', 'navyLeader', 'corpsCommander', 'advisor', 'countryLeader'].filter(tab => !value.includes(tab));
+                //     uncheckedTabs.forEach(tab => {
+                //         document.getElementById(tab).classList.remove('active');
+                //     });
+                //     this.updatePreview();
+                // }
+				handleCheckedChange(value) {
+				                this.checkedTabs = value;
+				                this.updatePreview();
+				            },
+				exportToTxt() {
+				                const textToSave = this.preview;
+				                const blob = new Blob([textToSave], { type: 'text/plain' });
+				                const link = document.createElement("a");
+				                link.href = URL.createObjectURL(blob);
+				                // link.download = `${this.name}.txt`;
+								link.download = `output.txt`;
+				                document.body.appendChild(link);
+				                link.click();
+				                document.body.removeChild(link);
+				            }
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+
